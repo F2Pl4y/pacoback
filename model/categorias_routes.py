@@ -15,7 +15,7 @@ def categoriasSelect():
     resultado = []
     exito = True
     try:
-        sql = "SELECT idCategoria, nombreCategoria FROM categoria WHERE idCategoria != 1"
+        sql = "SELECT idCategoria, nombreCategoria, estado FROM categoria WHERE idCategoria != 1"
         conector = mysql.connect()
         cursor = conector.cursor()
         cursor.execute(sql)
@@ -27,7 +27,8 @@ def categoriasSelect():
             for fila in datos:
                 categoria = {
                     "idCategoria": fila[0],
-                    "nombreCategoria": fila[1]
+                    "nombreCategoria": fila[1],
+                    "estado": fila[2]
                 }
                 resultado.append(categoria)
     except Exception as ex:
