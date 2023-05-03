@@ -15,7 +15,7 @@ def categoriasSelect():
     resultado = []
     exito = True
     try:
-        sql = "SELECT idCategoria, nombreCategoria, estado FROM categoria WHERE idCategoria != 1"
+        sql = "SELECT idCategoria, nombreCategoria, estado FROM categoria WHERE idCategoria != 1 and estado = 1;"
         conector = mysql.connect()
         cursor = conector.cursor()
         cursor.execute(sql)
@@ -67,34 +67,96 @@ def cambiarRutaFotoPlatillos(categoria):
     print(categoria["nombreCategoria"])
 
 
-@categorias.route("/categorias/update/<int:id>/", methods=["PUT"])
-@categorias.route("/categorias/create/", methods=["POST"], defaults={"id":None})
-def categoriasInsert(id):
-    categoria = obtenerCategoria(id)
+@categorias.route("/categorias/create/", methods=["POST"])
+# @categorias.route("/categorias/create/", methods=["POST"], defaults={"id":None})
+# @categorias.route("/categorias/create/<int:id>/", methods=["POST"])
+# def empleadoInsert(id):
+def empleadoInsert():
     try:
-        nombreCategoria = request.form["txtNombreCategoria"]
+        # if id != None:
+        #     idCargo = 2
+        # else:
+        #     idCargo = request.form["txtidCargo2"]
+        nombreCategoria = request.form["txtnombreCategoriaInsert"]
+        
         nombreCategoria = strip_tags(nombreCategoria)
+        datos = [
+            nombreCategoria
+        ]
         mensaje = ""
-        if nombreCategoria != None:
-            parametros = [nombreCategoria]
-            if id == None:
-                sql = "INSERT INTO categoria(nombreCategoria) VALUES (%s)"
-                os.mkdir('upload/images/'+nombreCategoria)
-            else:
-                if id == 1:
-                    mensaje = "Esta categoría no se puede modificar"
-                else:
-                    sql = "UPDATE categoria SET nombreCategoria = %s WHERE idCategoria = %s"
-                    parametros.append(id)
-                    os.rename("upload/images/"+categoria[0]["nombreCategoria"], "upload/images/"+nombreCategoria)
-            conector = mysql.connect()
-            cursor = conector.cursor()
-            cursor.execute(sql,parametros)
-            conector.commit()
-            if id != None and id != 1:
-                cambiarRutaFotoPlatillos(categoria)
-        else:
-            mensaje = "Debe insertar el nombre de la categoria"
+        sql = "INSERT INTO categoria(nombreCategoria) VALUES(%s);"
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute(sql, datos)
+        conn.commit()
+        mensaje = "Insertado correctamente"
     except Exception as ex:
-        mensaje = "Ocurrio un error " + repr(ex)
+        mensaje = "Error en la ejecucion listcateg "+repr(ex)
     return jsonify({"mensaje": mensaje})
+
+@categorias.route("/categorias/update/<int:id>/", methods=["PUT"])
+def empleadoUpdate(id):
+    try:
+        UPDcategoria1 = request.form["txtnombreCategoria"]
+        UPDcategoria1 = strip_tags(UPDcategoria1)
+
+        datos = [
+            UPDcategoria1,
+            id
+        ]
+
+        sql = "UPDATE categoria SET nombreCATEGORIA = %s WHERE idCategoria=%s;"
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute(sql, datos)
+        conn.commit()
+        mensaje = "creo que funciono xd"
+    except Exception as ex:
+        mensaje = "Error en la ejecucion" + repr(ex)
+    return jsonify({"mensaje": mensaje})
+
+@categorias.route("/categorias/disable/<int:id>/", methods=["PUT"])
+def empleadoDisable(id):
+    try:
+        # UPDcategoria1 = request.form["txtnombreCategoria"]
+        # UPDcategoria1 = strip_tags(UPDcategoria1)
+
+        datos = [
+            # UPDcategoria1,
+            id
+        ]
+
+        sql = "UPDATE categoria SET estado = 0 WHERE idCategoria=%s;"
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute(sql, datos)
+        conn.commit()
+        mensaje = "creo que funciono xd"
+    except Exception as ex:
+        mensaje = "Error en la ejecucion" + repr(ex)
+    return jsonify({"mensaje": mensaje})
+
+@categorias.route("/categorias/corroborar/", methods=["POST"])
+def empleadoCorroborar():
+    exito = True
+    id = request.form["id"]
+    # passwordEmpleado = strip_tags(request.form["password"])
+    try:
+        sql = "SELECT idCategoria, nombreCategoria, estado FROM categoria WHERE idCategoria = %s;"
+        conector = mysql.connect()
+        cursor = conector.cursor()
+        cursor.execute(sql, id)
+        dato = cursor.fetchone()
+        if dato != None:
+            resultado = {
+                "idCategoria": dato[0],
+                "nombreCategoria": dato[1],
+                "estado": dato[2],
+            }
+        else:
+            resultado = "datos categoria corroborar ERROR"
+            exito = False
+    except Exception as ex:
+        resultado = "Ocurrio un error al realizar la consulta "+repr(ex)
+        exito = False
+    return jsonify({"resultado": resultado, "exito": exito})

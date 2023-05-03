@@ -149,12 +149,13 @@ def empleadoGet(id):
 def empleadoCorroborar():
     exito = True
     id = request.form["id"]
-    passwordEmpleado = strip_tags(request.form["password"])
+    # passwordEmpleado = strip_tags(request.form["password"])
     try:
-        sql = "SELECT idEmpleado, nombreEmpleado, correoEmpleado, idCargo FROM empleado WHERE idEmpleado = %s and passwordEmpleado = AES_ENCRYPT(%s, %s);"
+        sql = "SELECT idEmpleado, nombreEmpleado, correoEmpleado, idCargo FROM empleado WHERE idEmpleado = %s;"
         conector = mysql.connect()
         cursor = conector.cursor()
-        cursor.execute(sql, [id, passwordEmpleado, passwordEmpleado])
+        # cursor.execute(sql, [id, passwordEmpleado, passwordEmpleado])
+        cursor.execute(sql, id)
         dato = cursor.fetchone()
         if dato != None:
             resultado = {
@@ -225,6 +226,32 @@ def empleadoInsert(id):
         mensaje = "Error en la ejecucion "+repr(ex)
     return jsonify({"mensaje": mensaje})
 
+
+# @empleados.route("/categorias/create/", methods=["POST"], defaults={"id":None})
+# @empleados.route("/categorias/create/<int:id>/", methods=["POST"])
+# def empleadoInsert(id):
+#     try:
+#         if id != None:
+#             idCargo = 2
+#         else:
+#             idCargo = request.form["txtidCargo2"]
+#         nombreEmpleado = request.form["txtnombreEmpleado2"]
+        
+#         nombreEmpleado = strip_tags(nombreEmpleado)
+#         datos = [
+#             nombreEmpleado,
+
+#         ]
+#         mensaje = ""
+#         sql = "INSERT INTO empleado(nombreEmpleado, correoEmpleado, passwordEmpleado, idCargo) VALUES(%s, %s, AES_ENCRYPT(%s,%s), %s);"
+#         conn = mysql.connect()
+#         cursor = conn.cursor()
+#         cursor.execute(sql, datos)
+#         conn.commit()
+#         mensaje = "Insertado correctamente"
+#     except Exception as ex:
+#         mensaje = "Error en la ejecucion "+repr(ex)
+#     return jsonify({"mensaje": mensaje})
 
 @empleados.route("/empleados/update/<int:id>/", methods=["PUT"])
 def empleadoUpdate(id):

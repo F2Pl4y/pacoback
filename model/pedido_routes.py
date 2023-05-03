@@ -22,15 +22,19 @@ def detallePedidoDelete(idPedido):
         exito = False
     return [mensaje, exito]
 
-@pedido.route("/pedido/selectEmp/<int:id>/", methods=["GET"])
-def pedidoEmpleado(id):
+# @pedido.route("/pedido/selectEmp/<int:id>/", methods=["GET"])
+@pedido.route("/pedido/selectEmp/", methods=["GET"])
+# def pedidoEmpleado(id):
+def pedidoEmpleado():
     resultado = []
     exito = True
     try:
-        sql = "SELECT idPedido, nombreCliente, estado, costoTotal, idEmpleado, p.idVenta FROM pedido as p inner join venta as v on p.idVenta = v.idVenta WHERE v.fecha = curdate() and idEmpleado = %s"
+        # la parte de idEmpleado es para que busque los productos "Registrados" por dicho empleado, lo voy a quitar para la ejecución del proyecto pero deberia ir al final: and idEmpleado = %s;
+        sql = "SELECT idPedido, nombreCliente, estado, costoTotal, idEmpleado, p.idVenta FROM pedido as p inner join venta as v on p.idVenta = v.idVenta WHERE v.fecha = curdate();"
         conector = mysql.connect()
         cursor = conector.cursor()
-        cursor.execute(sql, id)
+        # cursor.execute(sql, id)
+        cursor.execute(sql)
         datos = cursor.fetchall()
         if datos.count == 0:
             resultado = "No existen datos en la tabla"
