@@ -5,6 +5,7 @@ from model.cargo_routes import cargos
 from model.venta_routes import ventas
 from model.pedido_routes import pedido
 from model.detallepedido_routes import detallepedido
+from model.cliente_route import cliente
 from util.Aplication import Aplication
 
 aplication = Aplication()
@@ -16,6 +17,7 @@ app.register_blueprint(cargos)
 app.register_blueprint(ventas)
 app.register_blueprint(pedido)
 app.register_blueprint(detallepedido)
+app.register_blueprint(cliente)
 
 def pagina_no_encontrada(error):
     return "<h1>Método no encontrado</h1>"
