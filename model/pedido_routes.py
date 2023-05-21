@@ -111,6 +111,7 @@ def pedidoUpdate(idPedido):
         cursor = conn.cursor()
         cursor.execute(sql, idPedido)
         costo = cursor.fetchone()
+        # aumentar el monto de la venta diaria
         mensaje = ventasAumento(costo[0])
 
         if mensaje == None:
